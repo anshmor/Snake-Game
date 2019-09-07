@@ -14,6 +14,8 @@
 
 <script>
     //  create canvas
+    var speed = prompt("Enter what speed you want from 1-5.");
+    var redraw = 100 - (speed * 10);
     var canvas = document.getElementById("myCanvas");
     var ctx = canvas.getContext("2d");
     const size = 20;
@@ -266,7 +268,7 @@
         printScore();
     }
 
-    setInterval(draw, 50);
+    setInterval(draw, redraw);
 
 </script>
 

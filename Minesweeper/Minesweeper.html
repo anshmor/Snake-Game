@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Minesweeper</title>
+    <style>
+        * { padding: 0; margin: 0; }
+        canvas { background: #fbfff4; display: block; margin: 0 auto; }
+    </style>
+</head>
+<body>
+
+<canvas id="myCanvas" width="900" height="900"></canvas>
+
+<script>
+    //  create canvas
+    var canvas = document.getElementById("myCanvas");
+    var ctx = canvas.getContext("2d");
+    const length = 18;
+    const size = 50;
+    var gameOver = false;
+
+
+    var nodes = [];
+
+    for(var i = 0; i < length; i++){
+        var temp = [];
+        for(var j = 0; j < length; j++){
+            temp[j] = new Node(j * size, i * size);
+        }
+        nodes[i] = temp;
+    }
+
+    for(var i = 0; i < length; i++){
+        for(var j = 0; j < length; j++){
+            nodes[i][j].surrounding = getSurrounding(i, j);
+        }
+    }
+
+    //document.addEventListener("keydown", keyDownHandler, false);
+    //document.addEventListener("keyup", keyUpHandler, false);
+    //document.addEventListener("mousemove", mouseMoveHandler, false);
+    document.addEventListener("click", clicked);
+
+    function Node(x, y){
+        this.x = x;
+        this.y = y;
+        this.bomb = Math.random() < 0.25;
+        this.surrounding = 0;
+        this.shown = false;
+        this.show = function(){
+            ctx.beginPath();
+            ctx.strokeRect(this.x, this.y, size, size);
+            //ctx.rect(this.x, this.y, size, size);
+            //ctx.fillStyle = "#66d1ff";
+            //ctx.fill();
+            if(this.shown){
+                if(this.bomb){
+                    gameOver = true;
+                    ctx.arc(this.x + size/2, this.y + size/2, size/2-2, 0, Math.PI*2);
+                    ctx.fillStyle = "#dd1030";
+                    ctx.fill();
+                }
+                else {
+                    ctx.font = "50px TimesRoman";
+                    ctx.fillStyle = "#4d7fff";
+                    ctx.fillText(this.surrounding, this.x + size/4, this.y + size*7/8);
+                }
+            }
+            ctx.closePath();
+        }
+    }
+
+
+    function getSurrounding(index, index2){
+        var count = 0;
+        if(index !== 0){
+            if(nodes[index-1][index2].bomb){
+                count++;
+            }
+        }
+        if(index !== length-1){
+            if(nodes[index+1][index2].bomb){
+                count++;
+            }
+        }
+        if(index2 !== 0){
+            if(nodes[index][index2-1].bomb){
+                count++;
+            }
+        }
+        if(index2 !== length-1){
+            if(nodes[index][index2+1].bomb){
+                count++;
+            }
+        }
+
+        if(index !== 0 && index2 !== 0){
+            if(nodes[index-1][index2-1].bomb){
+                count++;
+            }
+        }
+
+        if(index !== 0 && index2 !== length-1){
+            if(nodes[index-1][index2+1]){
+                count++;
+            }
+        }
+
+        if(index !== length-1 && index2 !== 0){
+            if(nodes[index+1][index2-1].bomb){
+                count++;
+            }
+        }
+
+        if(index !== length-1 && index2 !== length-1){
+            if(nodes[index+1][index2+1].bomb){
+                count++;
+            }
+        }
+
+        return count;
+    }
+
+
+    function clicked(e) {
+        var relativeX = e.clientX - canvas.offsetLeft;
+        var relativeY = e.clientY - canvas.offsetTop;
+
+        nodes[parseInt(relativeY / size, 10)][parseInt(relativeX / size, 10)].shown = true;
+    }
+
+    function keyDownHandler(e) {
+
+
+    }
+
+    function keyUpHandler(e) {
+
+
+    }
+
+
+    function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        for(var i = 0; i < nodes.length; i++){
+            for(var j = 0; j < nodes[i].length; j++){
+                nodes[i][j].show();
+            }
+        }
+
+
+    }
+
+    setInterval(draw, 10);
+
+</script>
+
+</body>
+</html>
